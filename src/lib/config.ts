@@ -5,7 +5,12 @@ export const brand = {
   legalEntity: "GF Web",
   contactEmail: "contact@gf-web.fr",
   supportEmail: "contact@gf-web.fr",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  // Sur Vercel, l'URL de production est fournie automatiquement tant qu'aucune n'est fixée
+  siteUrl:
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3000"),
 };
 
 export const plans = [
