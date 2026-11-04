@@ -9,7 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:db": "psql \"${DATABASE_URL:-postgres://postgres@localhost:54322/postgres}\" -v ON_ERROR_STOP=1 -f supabase/tests/01_leave_rules.sql",
-    "holidays": "node scripts/generate-holidays.mjs > supabase/migrations/20261104000004_holidays.sql"
+    "holidays": "node scripts/generate-holidays.mjs"
   },
   "dependencies": {
     "@fontsource-variable/instrument-sans": "^5.3.0",
