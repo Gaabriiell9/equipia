@@ -45,7 +45,7 @@ Fichiers clés :
 | `supabase/migrations/…05_storage_cron_grants.sql` | Bucket justificatifs, tâche pg_cron, privilèges |
 | `supabase/migrations/…06/07` | Justificatifs après coup, statut des comptes pour la fonction Edge |
 | `supabase/functions/admin-auth/` | Fonction Edge d'administration |
-| `supabase/tests/01_leave_rules.sql` | 60 tests SQL (règles, droits, cloisonnement) |
+| `supabase/tests/01_leave_rules.sql` | 69 vérifications SQL (règles, droits, cloisonnement) |
 | `src/lib/auth.ts` | Contexte de session (entreprise active, rôle, double authentification) |
 | `src/app/app/actions/*` | Actions serveur (appellent les RPC puis envoient les e-mails) |
 
