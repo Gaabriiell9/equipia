@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #14213d;
+  --color-ink-soft: #33415e;
+  --color-muted: #657189;
+  --color-faint: #98a1b3;
+  --color-line: #dde2ea;
+  --color-line-strong: #c4ccd8;
+  --color-surface: #f3f5f8;
+  --color-paper: #ffffff;
+  --color-marker: #f2c230;
+  --color-marker-strong: #dcaa12;
+  --color-marker-soft: #fff4cc;
+  --color-ok: #1e7f55;
+  --color-ok-soft: #e3f3ea;
+  --color-danger: #b9382a;
+  --color-danger-soft: #fbe8e5;
+  --color-wait: #a66a12;
+  --color-wait-soft: #fdf1dc;
+  --color-navy-900: #0d1730;
+  --color-navy-800: #14213d;
+  --color-navy-700: #1f2f52;
+  --color-navy-600: #2e4170;
+
+  --radius-ctl: 8px;
+  --radius-panel: 14px;
+  --radius-chip: 6px;
+
+  --text-display: 3.6rem;
+  --text-display--line-height: 1;
+  --text-headline: 2.3rem;
+  --text-headline--line-height: 1.05;
+}
+
+@layer base {
+  html {
+    color: var(--color-ink);
+    background: var(--color-paper);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    font-feature-settings: "ss01" 1;
+  }
+  ::selection {
+    background: var(--color-marker-soft);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-navy-600);
+    outline-offset: 2px;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.6;
+    cursor: pointer;
+  }
+}
+
+@utility font-condensed {
+  font-stretch: 75%;
+  font-variation-settings: "wdth" 75;
+}
+@utility font-semicondensed {
+  font-stretch: 87.5%;
+  font-variation-settings: "wdth" 87.5;
+}
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hachures des absences en attente dans le planning */
+@utility pending-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, currentColor 22%, transparent) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+/* Séquence unique du hero : demande en attente, validation, solde mis à jour */
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hero-pop {
+  0% { opacity: 0; transform: scale(0.85); }
+  70% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes hero-out {
+  to { opacity: 0; }
+}
+@keyframes hero-grow {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.hero-pending { opacity: 0; animation: hero-in 0.45s ease-out 0.7s forwards, hero-out 0.35s ease-in 2.9s forwards; }
+.hero-callout { opacity: 0; animation: hero-in 0.4s ease-out 1s forwards; }
+.hero-stamp { opacity: 0; animation: hero-pop 0.45s ease-out 2.4s forwards; }
+.hero-approved { opacity: 0; animation: hero-in 0.01s linear 2.9s forwards, hero-grow 0.5s ease-out 2.9s both; }
+.hero-balance-old { animation: hero-out 0.25s ease-in 3.1s forwards; }
+.hero-balance-new { opacity: 0; animation: hero-in 0.35s ease-out 3.3s forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
