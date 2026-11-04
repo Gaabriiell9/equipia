@@ -32,6 +32,7 @@ Nom provisoire : il se change dans `src/lib/config.ts` (marque, tarifs, contact)
 2. **Écriture** : aucune politique d'insertion ou de mise à jour. Toutes les écritures passent par des fonctions `security definer` (`submit_leave_request`, `decide_leave_request`, `adjust_balance`...) qui vérifient les droits et appliquent les règles. Le rôle `anon` n'a accès qu'au flux iCal par jeton.
 3. **Compteurs** : table `leave_ledger` (mouvements), le solde est toujours la somme des mouvements : historique complet et auditable.
 4. **Audit** : `audit_log` alimenté par chaque fonction, lisible par les RH uniquement.
+5. **Comptes** : aucun mot de passe n'est fixé avant la preuve de possession de l'e-mail (inscription et invitation passent par un lien, puis le mot de passe est choisi sur `/bienvenue`). La fonction Edge supprime tout compte non confirmé avant d'émettre un nouveau lien (protection contre le pré-détournement de compte).
 
 Fichiers clés :
 
@@ -42,6 +43,7 @@ Fichiers clés :
 | `supabase/migrations/…03_admin.sql` | Espace, salariés, import, paramètres, tableaux de bord, exports, RGPD, démo |
 | `supabase/migrations/…04_holidays.sql` | Jours fériés (généré par `npm run holidays`) |
 | `supabase/migrations/…05_storage_cron_grants.sql` | Bucket justificatifs, tâche pg_cron, privilèges |
+| `supabase/migrations/…06/07` | Justificatifs après coup, statut des comptes pour la fonction Edge |
 | `supabase/functions/admin-auth/` | Fonction Edge d'administration |
 | `supabase/tests/01_leave_rules.sql` | 60 tests SQL (règles, droits, cloisonnement) |
 | `src/lib/auth.ts` | Contexte de session (entreprise active, rôle, double authentification) |
@@ -75,7 +77,7 @@ npm run test:db   # DATABASE_URL=postgres://... pour une autre base
    ```bash
    supabase functions deploy admin-auth --no-verify-jwt
    ```
-5. **Auth Supabase** : Site URL = URL de production. La double authentification TOTP doit être active (par défaut). Recommandé : désactiver l'inscription publique directe (Authentication > Sign In), les inscriptions passant par la fonction Edge (à vérifier sur votre projet).
+5. **Auth Supabase** : Site URL = URL de production. La double authentification TOTP doit être active (par défaut). **Obligatoire : désactiver « Allow new users to sign up »** (Authentication > Sign In / Providers). Les inscriptions et invitations passent par la fonction Edge, qui fonctionne avec ce réglage ; sans lui, un tiers pourrait créer un compte non confirmé via l'API publique de Supabase.
 6. **Resend** : vérifier un domaine d'envoi (DNS chez Cloudflare), créer une clé API.
 7. **Vercel** : importer le dépôt GitHub, renseigner les variables de `.env.example` (`EMAIL_TRANSPORT=resend`), puis ajouter le domaine.
 8. Vérifier : `select * from cron.job;` (tâche `equipia-accruals`) et les conseillers de sécurité Supabase.

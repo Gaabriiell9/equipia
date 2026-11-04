@@ -49,7 +49,7 @@ export function SignUpForm() {
       <div className="flex flex-col items-start gap-3">
         <MailCheck className="size-8 text-ok" />
         <p className="text-[15px] text-ink">
-          Un e-mail de confirmation vient de partir vers <strong>{state.message}</strong>. Cliquez sur le lien pour créer votre espace.
+          Un e-mail de confirmation vient de partir vers <strong>{state.message}</strong>. Cliquez sur le lien pour choisir votre mot de passe et créer votre espace.
         </p>
         <p className="text-sm text-muted">Rien reçu après 2 minutes ? Regardez dans les indésirables ou recommencez l&apos;inscription.</p>
       </div>
@@ -94,9 +94,6 @@ export function SignUpForm() {
       </div>
       <Field label="E-mail professionnel" htmlFor="email" error={fe.email}>
         <Input id="email" name="email" type="email" autoComplete="email" required />
-      </Field>
-      <Field label="Mot de passe" htmlFor="password" hint="10 caractères minimum." error={fe.password}>
-        <Input id="password" name="password" type="password" autoComplete="new-password" minLength={10} required />
       </Field>
       <Checkbox
         name="cgu"

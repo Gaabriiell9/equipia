@@ -20,7 +20,6 @@ function endpoint() {
 export async function generateLink(p: {
   type: LinkType;
   email: string;
-  password?: string;
   data?: Record<string, unknown>;
 }): Promise<LinkResult> {
   const secret = process.env.EQUIPIA_EDGE_SECRET;
@@ -40,10 +39,11 @@ export async function generateLink(p: {
   }
 }
 
-export function confirmUrl(hashedToken: string, type: string, next: string) {
+export function confirmUrl(hashedToken: string, type: string, next: string, objet?: "inscription" | "invitation" | "connexion" | "motdepasse") {
   const u = new URL("/auth/confirmer", brand.siteUrl);
   u.searchParams.set("token_hash", hashedToken);
   u.searchParams.set("type", type);
   u.searchParams.set("suite", next);
+  if (objet) u.searchParams.set("objet", objet);
   return u.toString();
 }

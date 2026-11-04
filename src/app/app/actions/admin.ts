@@ -51,7 +51,8 @@ export async function sendInvitation(memberId: string): Promise<ActionResult> {
   const { data, error } = await ctx.supabase.rpc("prepare_invitation", { p_member: memberId });
   if (error) return fail(error);
   const inv = data as { email: string; first_name: string; org_name: string; inviter: string; existing_user: boolean };
-  const link = await generateLink({ type: inv.existing_user ? "magiclink" : "invite", email: inv.email });
+  // La fonction Edge choisit le bon lien : invitation (nouveau compte) ou connexion (compte existant confirmé)
+  const link = await generateLink({ type: "invite", email: inv.email });
   if (!link.ok) {
     console.error("[invitation]", link);
     return { ok: false, error: "L'invitation n'a pas pu être générée. Réessayez dans un instant." };
@@ -60,7 +61,10 @@ export async function sendInvitation(memberId: string): Promise<ActionResult> {
     await sendEmail({
       to: inv.email,
       ...inviteEmail({
-        link: confirmUrl(link.hashedToken, inv.existing_user ? "magiclink" : "invite", inv.existing_user ? "/app" : "/bienvenue"),
+        link:
+          link.verificationType === "magiclink"
+            ? confirmUrl(link.hashedToken, "magiclink", "/app", "invitation")
+            : confirmUrl(link.hashedToken, "invite", "/bienvenue", "invitation"),
         firstName: inv.first_name,
         orgName: inv.org_name,
         inviter: inv.inviter,

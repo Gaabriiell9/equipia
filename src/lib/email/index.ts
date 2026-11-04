@@ -64,7 +64,7 @@ export function signupEmail(link: string, firstName: string): Omit<Email, "to"> 
       heading: "Confirmez votre adresse e-mail",
       paragraphs: [
         `Bonjour ${firstName},`,
-        `Merci d'avoir choisi ${brand.name}. Confirmez votre adresse pour créer l'espace de votre entreprise. Le lien est valable 24 heures.`,
+        `Merci d'avoir choisi ${brand.name}. Confirmez votre adresse : vous choisirez ensuite votre mot de passe et créerez l'espace de votre entreprise. Le lien est valable 24 heures.`,
       ],
       cta: { label: "Confirmer mon adresse", url: link },
       footer: "Vous n'êtes pas à l'origine de cette demande ? Ignorez simplement ce message.",

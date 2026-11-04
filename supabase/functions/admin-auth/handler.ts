@@ -58,18 +58,33 @@ export async function handler(req: Request): Promise<Response> {
     const type = String(body.type ?? "");
     const email = String(body.email ?? "").trim().toLowerCase();
     if (!LINK_TYPES.has(type) || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: "bad_request" }, 400);
-    const params: Record<string, unknown> = {
-      type,
+
+    // Un compte non confirmé n'a encore aucune valeur : on le supprime avant d'émettre un nouveau lien,
+    // pour qu'aucun mot de passe choisi par un tiers ne survive à la confirmation par le vrai titulaire.
+    const { data: st } = await admin.rpc("auth_user_status", { p_email: email });
+    let status = (st as { id: string; confirmed: boolean } | null) ?? null;
+    if (status && !status.confirmed && type !== "recovery") {
+      await admin.auth.admin.deleteUser(status.id);
+      status = null;
+    }
+
+    // Aucun mot de passe n'est jamais fixé ici : il est choisi après la preuve de possession de l'e-mail.
+    let linkType = type;
+    if (type === "signup") {
+      if (status) return json({ error: "user_exists" }, 422);
+      linkType = "invite";
+    } else if (type === "invite") {
+      if (status) linkType = "magiclink";
+    } else if (!status) {
+      return json({ error: "not_found" }, 404);
+    }
+
+    // deno-lint-ignore no-explicit-any
+    const { data, error } = await admin.auth.admin.generateLink({
+      type: linkType,
       email,
       options: { redirectTo: body.redirect_to, data: body.data ?? undefined },
-    };
-    if (type === "signup") {
-      const password = String(body.password ?? "");
-      if (password.length < 8) return json({ error: "bad_request", message: "password" }, 400);
-      params.password = password;
-    }
-    // deno-lint-ignore no-explicit-any
-    const { data, error } = await admin.auth.admin.generateLink(params as any);
+    } as any);
     if (error) {
       const msg = error.message.toLowerCase();
       if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) return json({ error: "user_exists" }, 422);
@@ -78,7 +93,7 @@ export async function handler(req: Request): Promise<Response> {
     }
     return json({
       hashed_token: data.properties?.hashed_token,
-      verification_type: data.properties?.verification_type ?? type,
+      verification_type: linkType,
       user_id: data.user?.id,
     });
   }

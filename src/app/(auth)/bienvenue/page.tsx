@@ -17,12 +17,17 @@ export default async function Page() {
     .limit(1)
     .maybeSingle();
   const orgName = (m?.organizations as unknown as { name: string } | null)?.name;
+  const firstName = m?.first_name ?? (user.user_metadata?.first_name as string | undefined);
   return (
     <AuthCard
-      title={m?.first_name ? `Bienvenue ${m.first_name}` : "Bienvenue"}
-      description={orgName ? `Choisissez votre mot de passe pour accéder à l'espace ${orgName}.` : "Choisissez votre mot de passe."}
+      title={firstName ? `Bienvenue ${firstName}` : "Bienvenue"}
+      description={
+        orgName
+          ? `Choisissez votre mot de passe pour accéder à l'espace ${orgName}.`
+          : "Adresse confirmée. Choisissez votre mot de passe, puis vous créerez l'espace de votre entreprise."
+      }
     >
-      <NewPasswordForm next="/app" cta="Accéder à mon espace" />
+      <NewPasswordForm next="/app" cta={orgName ? "Accéder à mon espace" : "Continuer"} />
     </AuthCard>
   );
 }

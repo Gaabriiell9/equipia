@@ -19,7 +19,6 @@ const signupSchema = z.object({
   sector: z.enum(["general", "hcr"]),
   size: z.string().max(20).optional(),
   email: z.email("Adresse e-mail invalide").transform((v) => v.toLowerCase()),
-  password: z.string().min(10, "10 caractères minimum").max(72),
   cgu: z.literal("on", { message: "Acceptez les conditions pour continuer" }),
 });
 
@@ -32,18 +31,18 @@ export async function signUp(_: ActionResult | null, formData: FormData): Promis
     return { ok: false, error: "Vérifiez les champs indiqués.", fieldErrors };
   }
   const v = parsed.data;
+  // Le mot de passe est choisi après la confirmation de l'adresse (page /bienvenue)
   const link = await generateLink({
     type: "signup",
     email: v.email,
-    password: v.password,
     data: { first_name: v.first_name, last_name: v.last_name, company: v.company, sector: v.sector, size: v.size ?? null },
   });
   try {
     if (link.ok) {
-      await sendEmail({ to: v.email, ...signupEmail(confirmUrl(link.hashedToken, "signup", "/onboarding"), v.first_name) });
+      await sendEmail({ to: v.email, ...signupEmail(confirmUrl(link.hashedToken, link.verificationType, "/bienvenue", "inscription"), v.first_name) });
     } else if (link.error === "user_exists") {
       const magic = await generateLink({ type: "magiclink", email: v.email });
-      if (magic.ok) await sendEmail({ to: v.email, ...existingAccountEmail(confirmUrl(magic.hashedToken, "magiclink", "/app")) });
+      if (magic.ok) await sendEmail({ to: v.email, ...existingAccountEmail(confirmUrl(magic.hashedToken, magic.verificationType, "/app", "connexion")) });
     } else {
       console.error("[inscription]", link);
       return { ok: false, error: "Le service d'inscription est momentanément indisponible. Réessayez dans quelques minutes." };
@@ -82,7 +81,7 @@ export async function requestPasswordReset(_: ActionResult | null, formData: For
   const link = await generateLink({ type: "recovery", email });
   if (link.ok) {
     try {
-      await sendEmail({ to: email, ...recoveryEmail(confirmUrl(link.hashedToken, "recovery", "/nouveau-mot-de-passe")) });
+      await sendEmail({ to: email, ...recoveryEmail(confirmUrl(link.hashedToken, "recovery", "/nouveau-mot-de-passe", "motdepasse")) });
     } catch (e) {
       console.error("[mot de passe] e-mail", e);
     }
