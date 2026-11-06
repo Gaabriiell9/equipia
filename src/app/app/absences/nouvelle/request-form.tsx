@@ -75,7 +75,9 @@ export function RequestForm({
   const reasons = type?.reasons ?? [];
   const reasonInfo = reasons.find((r) => r.code === reason);
   const blockingError = preview?.errors?.[0] ?? previewError;
-  const canSubmit = !!type && !!start && !!end && !!preview && !blockingError && !pending && !(reasons.length > 0 && !reason);
+  // Le salarié doit joindre le justificatif quand le type l'exige (un manager ou les RH peuvent saisir sans)
+  const docMissing = !!type?.requires_attachment && !forOther && !file;
+  const canSubmit = !!type && !!start && !!end && !!preview && !blockingError && !pending && !(reasons.length > 0 && !reason) && !docMissing;
 
   const submitLabel = !type ? "Envoyer" : forOther ? "Enregistrer l'absence" : type.requires_approval ? "Envoyer la demande" : "Déclarer l'absence";
 
@@ -251,7 +253,9 @@ export function RequestForm({
           </Field>
           {(type?.requires_attachment || type?.category === "sick" || type?.category === "sick_pro") && (
             <div className="mt-4">
-              <p className="mb-1.5 text-sm font-semibold">Justificatif{type?.requires_attachment ? "" : " (facultatif)"}</p>
+              <p className="mb-1.5 text-sm font-semibold">
+                Justificatif{type?.requires_attachment ? (forOther ? " (recommandé)" : " (obligatoire)") : " (facultatif)"}
+              </p>
               {file ? (
                 <div className="flex items-center gap-2 rounded-ctl border border-line px-3 py-2 text-sm">
                   <Paperclip className="size-4 text-muted" />
@@ -278,7 +282,10 @@ export function RequestForm({
                   />
                 </label>
               )}
-              <p className="mt-1.5 text-xs text-muted">Visible uniquement par vous, votre manager et les RH. Vous pourrez aussi l&apos;ajouter plus tard.</p>
+              <p className="mt-1.5 text-xs text-muted">
+                {type?.requires_attachment && !forOther ? "Nécessaire pour envoyer la demande. " : "Vous pourrez aussi l'ajouter plus tard. "}
+                Visible uniquement par vous, votre manager et les RH.
+              </p>
             </div>
           )}
         </fieldset>
@@ -343,6 +350,11 @@ export function RequestForm({
             <Button type="submit" size="lg" className="mt-0 w-full" disabled={!canSubmit}>
               {pending ? "Envoi..." : submitLabel}
             </Button>
+            {docMissing && !!preview && !blockingError && (
+              <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs font-semibold text-wait">
+                <Paperclip className="size-3.5" /> Joignez le justificatif pour envoyer
+              </p>
+            )}
             {type && !forOther && type.requires_approval && (
               <p className="mt-2 text-center text-xs text-muted">Votre responsable est prévenu immédiatement.</p>
             )}
