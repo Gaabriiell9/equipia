@@ -14,6 +14,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ n
   await supabase.rpc("claim_memberships");
   const { count } = await supabase.from("members").select("id", { count: "exact", head: true }).eq("user_id", user.id).neq("status", "disabled");
   if ((count ?? 0) > 0 && !sp.nouveau) redirect("/app");
+  if ((count ?? 0) === 0 && !sp.nouveau) {
+    const { data: removed } = await supabase.rpc("my_removed_orgs");
+    if (Array.isArray(removed) && removed.length > 0) redirect("/acces-retire");
+  }
   const meta = (user.user_metadata ?? {}) as Record<string, string>;
   return (
     <div className="min-h-dvh bg-surface">

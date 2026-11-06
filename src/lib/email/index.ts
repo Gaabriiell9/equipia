@@ -121,3 +121,20 @@ export function inviteEmail(p: { link: string; firstName: string; orgName: strin
     text: `Bonjour ${p.firstName},\n\n${p.inviter} vous invite à rejoindre ${p.orgName} sur ${brand.name} :\n${p.link}\n\nLe lien est valable 24 heures.`,
   };
 }
+
+export function accessRemovedEmail(p: { firstName: string; orgName: string }): Omit<Email, "to"> {
+  return {
+    subject: `Votre accès à ${p.orgName} sur ${brand.name} a été désactivé`,
+    html: emailLayout({
+      preheader: `Vous ne pouvez plus vous connecter à l'espace ${p.orgName}.`,
+      heading: "Votre accès a été désactivé",
+      paragraphs: [
+        `Bonjour ${p.firstName},`,
+        `${p.orgName} a désactivé votre accès à son espace ${brand.name}. Vous ne pouvez plus vous y connecter ni poser d'absence.`,
+        "Vos absences et vos soldes restent conservés par l'entreprise. Pour toute question (solde de tout compte, attestation, erreur), contactez directement votre responsable ou le service RH.",
+      ],
+      footer: `Ce message a été envoyé automatiquement pour ${p.orgName}.`,
+    }),
+    text: `Bonjour ${p.firstName},\n\n${p.orgName} a désactivé votre accès à son espace ${brand.name}. Vous ne pouvez plus vous y connecter.\n\nPour toute question, contactez votre responsable ou le service RH.`,
+  };
+}

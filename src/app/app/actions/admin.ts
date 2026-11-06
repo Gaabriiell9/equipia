@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { getContext, ORG_COOKIE } from "@/lib/auth";
 import { fail, type ActionResult } from "@/lib/actions";
 import { confirmUrl, generateLink } from "@/lib/admin-auth";
-import { inviteEmail, sendEmail } from "@/lib/email";
+import { accessRemovedEmail, inviteEmail, sendEmail } from "@/lib/email";
 
 // Les droits sont vérifiés par chaque fonction de la base (RPC) : ici on récupère seulement la session.
 async function hr() {
@@ -112,8 +112,20 @@ export async function updateMember(memberId: string, patch: Record<string, unkno
 
 export async function setMemberActive(memberId: string, active: boolean): Promise<ActionResult> {
   const ctx = await hr();
+  const { data: m } = await ctx.supabase.from("members").select("email, first_name, user_id, is_demo, status").eq("id", memberId).maybeSingle();
   const { error } = await ctx.supabase.rpc("set_member_status", { p_member: memberId, p_active: active });
-  return error ? fail(error) : done(active ? "Salarié réactivé" : "Salarié désactivé");
+  if (error) return fail(error);
+  // Prévient la personne qui avait un compte que son accès est retiré
+  if (!active && m && m.user_id && !m.is_demo && m.status !== "disabled") {
+    try {
+      await sendEmail({ to: m.email, ...accessRemovedEmail({ firstName: m.first_name, orgName: ctx.org.name }) });
+    } catch (e) {
+      console.error("[désactivation] e-mail", e);
+      return done("Salarié désactivé (l'e-mail d'information n'a pas pu être envoyé)");
+    }
+    return done("Salarié désactivé et prévenu par e-mail");
+  }
+  return done(active ? "Salarié réactivé" : "Salarié désactivé");
 }
 
 export async function anonymizeMember(memberId: string): Promise<ActionResult> {

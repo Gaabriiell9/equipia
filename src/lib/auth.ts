@@ -48,7 +48,12 @@ export const getContext = cache(async () => {
     const { data: claimed } = await supabase.rpc("claim_memberships");
     if (claimed && claimed > 0) memberships = await loadMemberships(supabase, user.id);
   }
-  if (memberships.length === 0) redirect("/onboarding");
+  if (memberships.length === 0) {
+    // Retiré de son entreprise : page explicative plutôt que la création d'un nouvel espace
+    const { data: removed } = await supabase.rpc("my_removed_orgs");
+    if (Array.isArray(removed) && removed.length > 0) redirect("/acces-retire");
+    redirect("/onboarding");
+  }
 
   const cookieStore = await cookies();
   const wanted = cookieStore.get(ORG_COOKIE)?.value;
