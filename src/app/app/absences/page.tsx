@@ -10,7 +10,7 @@ import { EmptyState, PageHeader, Panel, PanelHeader } from "@/components/ui/disp
 import { Button } from "@/components/ui/button";
 import type { LedgerEntry } from "@/lib/types";
 
-export const metadata: Metadata = { title: "Mes absences" };
+export const metadata: Metadata = { title: "Absences" };
 
 export default async function Page() {
   const ctx = await getContext();
@@ -31,7 +31,7 @@ export default async function Page() {
   return (
     <>
       <PageHeader
-        title="Mes absences"
+        title="Absences"
         description="Vos demandes, vos soldes et l'historique de vos compteurs."
         actions={
           <Button asChild size="lg">

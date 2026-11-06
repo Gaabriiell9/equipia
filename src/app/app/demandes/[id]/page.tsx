@@ -58,7 +58,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       <PageHeader
         back={
           <Link href={isSelf ? "/app/absences" : "/app/validations"} className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
-            <ArrowLeft className="size-4" /> {isSelf ? "Mes absences" : "Validations"}
+            <ArrowLeft className="size-4" /> {isSelf ? "Absences" : "Validations"}
           </Link>
         }
         title={r.leave_types?.name ?? "Absence"}

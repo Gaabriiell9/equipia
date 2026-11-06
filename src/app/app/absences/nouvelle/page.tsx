@@ -43,7 +43,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       <PageHeader
         back={
           <Link href="/app/absences" className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
-            <ArrowLeft className="size-4" /> Mes absences
+            <ArrowLeft className="size-4" /> Absences
           </Link>
         }
         title="Poser une absence"
