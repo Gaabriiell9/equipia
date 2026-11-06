@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import { getContext, ORG_COOKIE } from "@/lib/auth";
 import { fail, type ActionResult } from "@/lib/actions";
 import { confirmUrl, generateLink } from "@/lib/admin-auth";
-import { accessRemovedEmail, inviteEmail, sendEmail } from "@/lib/email";
+import { accessRemovedEmail, accessRestoredEmail, inviteEmail, sendEmail } from "@/lib/email";
+import { brand } from "@/lib/config";
 
 // Les droits sont vérifiés par chaque fonction de la base (RPC) : ici on récupère seulement la session.
 async function hr() {
@@ -94,14 +95,22 @@ export async function inviteMember(input: MemberInput, sendNow: boolean): Promis
     p_employee_number: input.employee_number || null,
   });
   if (error) return fail(error);
-  const id = (data as { member_id: string }).member_id;
+  const res = data as { member_id: string; reactivated?: boolean; has_account?: boolean };
+  const id = res.member_id;
+  if (res.reactivated && res.has_account) {
+    // Ancien salarié qui avait déjà un compte : il retrouve son accès, on le prévient
+    await notifyRestored(input.email, input.first_name, ctx.org.name);
+    revalidatePath("/app", "layout");
+    return { ok: true, data: { id }, message: "Ancien salarié réintégré et prévenu par e-mail (historique et soldes conservés)" };
+  }
+  const added = res.reactivated ? "Ancien salarié réintégré (historique conservé)" : "Salarié ajouté";
   if (sendNow) {
     const r = await sendInvitation(id);
-    if (!r.ok) return { ok: true, data: { id }, message: `Salarié ajouté, mais ${r.error.toLowerCase()}` };
-    return { ok: true, data: { id }, message: "Salarié ajouté et invitation envoyée" };
+    if (!r.ok) return { ok: true, data: { id }, message: `${added}, mais ${r.error.toLowerCase()}` };
+    return { ok: true, data: { id }, message: `${added}, invitation envoyée` };
   }
   revalidatePath("/app", "layout");
-  return { ok: true, data: { id }, message: "Salarié ajouté" };
+  return { ok: true, data: { id }, message: added };
 }
 
 export async function updateMember(memberId: string, patch: Record<string, unknown>): Promise<ActionResult> {
@@ -125,7 +134,19 @@ export async function setMemberActive(memberId: string, active: boolean): Promis
     }
     return done("Salarié désactivé et prévenu par e-mail");
   }
+  if (active && m && m.user_id && !m.is_demo && m.status === "disabled") {
+    await notifyRestored(m.email, m.first_name, ctx.org.name);
+    return done("Salarié réactivé et prévenu par e-mail");
+  }
   return done(active ? "Salarié réactivé" : "Salarié désactivé");
+}
+
+async function notifyRestored(email: string, firstName: string, orgName: string) {
+  try {
+    await sendEmail({ to: email, ...accessRestoredEmail({ firstName, orgName, link: `${brand.siteUrl}/connexion` }) });
+  } catch (e) {
+    console.error("[réactivation] e-mail", e);
+  }
 }
 
 export async function anonymizeMember(memberId: string): Promise<ActionResult> {

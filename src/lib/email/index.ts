@@ -138,3 +138,21 @@ export function accessRemovedEmail(p: { firstName: string; orgName: string }): O
     text: `Bonjour ${p.firstName},\n\n${p.orgName} a désactivé votre accès à son espace ${brand.name}. Vous ne pouvez plus vous y connecter.\n\nPour toute question, contactez votre responsable ou le service RH.`,
   };
 }
+
+export function accessRestoredEmail(p: { firstName: string; orgName: string; link: string }): Omit<Email, "to"> {
+  return {
+    subject: `Votre accès à ${p.orgName} sur ${brand.name} est rétabli`,
+    html: emailLayout({
+      preheader: `Vous pouvez de nouveau vous connecter à l'espace ${p.orgName}.`,
+      heading: "Bon retour parmi nous",
+      paragraphs: [
+        `Bonjour ${p.firstName},`,
+        `${p.orgName} a rétabli votre accès à son espace ${brand.name}. Vos soldes et votre historique d'absences sont toujours là.`,
+        "Connectez-vous avec votre adresse e-mail et votre mot de passe habituel. Si vous l'avez oublié, utilisez « Mot de passe oublié ».",
+      ],
+      cta: { label: "Me connecter", url: p.link },
+      footer: `Ce message a été envoyé automatiquement pour ${p.orgName}.`,
+    }),
+    text: `Bonjour ${p.firstName},\n\n${p.orgName} a rétabli votre accès à son espace ${brand.name}.\nConnectez-vous : ${p.link}`,
+  };
+}

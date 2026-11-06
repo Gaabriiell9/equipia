@@ -101,7 +101,7 @@ export function MemberForm({
       </Field>
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Poste" htmlFor="m-job">
-          <Input id="m-job" name="job_title" defaultValue={member?.job_title ?? ""} placeholder="Ex. : Commis de cuisine" />
+          <Input id="m-job" name="job_title" defaultValue={member?.job_title ?? ""} placeholder="Ex. : Comptable, Technicien, Vendeur" />
         </Field>
         <Field label="Rôle dans Équipia" htmlFor="m-role">
           <Select id="m-role" name="role" defaultValue={member?.role ?? "employee"} disabled={!!member && member.role === "admin" && !isAdmin}>
