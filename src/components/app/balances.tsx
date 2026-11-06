@@ -6,22 +6,21 @@ export function BalanceCards({ balances: all, compact }: { balances: Balance[]; 
   const balances = all.filter((b) => b.category === "paid_leave" || b.available !== 0 || b.pending !== 0 || b.periods.some((p) => p.acquired !== 0 || p.taken !== 0));
   if (!balances.length) return null;
   return (
-    <div className={cn("grid gap-3", compact ? "grid-cols-2" : "grid-cols-2 lg:grid-cols-4")}>
+    <div className={cn("grid gap-3", compact ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(168px,184px))]")}>
       {balances.map((b) => (
-        <div key={b.leave_type_id} className="rounded-panel border border-line bg-paper p-4">
+        <div key={b.leave_type_id} className="flex aspect-square flex-col rounded-panel border border-line bg-paper p-4">
           <div className="flex items-center gap-2">
-            <span className="size-2.5 rounded-[3px]" style={{ background: b.color }} aria-hidden />
+            <span className="size-2.5 shrink-0 rounded-[3px]" style={{ background: b.color }} aria-hidden />
             <span className="truncate text-sm font-semibold text-ink-soft">{b.name}</span>
           </div>
-          <p className="mt-3 flex items-baseline gap-1.5">
-            <span className={cn("tabular text-[2.1rem] leading-none font-bold", b.projected < 0 ? "text-danger" : "text-ink")}>
+          <div className="flex flex-1 flex-col justify-center">
+            <span className={cn("tabular text-[2.8rem] leading-none font-bold", b.projected < 0 ? "text-danger" : "text-ink")}>
               {fmtNum(b.projected)}
             </span>
-            <span className="text-sm text-muted">{Math.abs(b.projected) <= 1 ? "jour" : "jours"}</span>
-          </p>
-          <p className="mt-1.5 text-xs text-muted">
-            {b.pending > 0 ? `disponibles après ${fmtNum(b.pending)} j en attente` : "disponibles"}
-            {b.counting === "ouvrables" ? ", en jours ouvrables" : ""}
+            <span className="mt-1 text-sm text-muted">{Math.abs(b.projected) <= 1 ? "jour disponible" : "jours disponibles"}</span>
+          </div>
+          <p className="text-xs leading-snug text-muted">
+            {b.pending > 0 ? `après ${fmtNum(b.pending)} j en attente` : b.counting === "ouvrables" ? "en jours ouvrables" : "en jours ouvrés"}
           </p>
         </div>
       ))}
