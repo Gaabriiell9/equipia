@@ -263,17 +263,28 @@ function TeamsStep({ org, teams }: { org: Organization; teams: Team[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [name, setName] = useState("");
+  const [picking, setPicking] = useState<string | null>(null);
   const existing = new Set(teams.map((t) => t.name.toLowerCase()));
 
   function add(n: string) {
     const v = n.trim();
     if (!v) return;
     start(async () => {
-      const r = await upsertTeam(null, v, teamColors[teams.length % teamColors.length], 0);
+      const used = new Set(teams.map((t) => t.color));
+      const color = teamColors.find((c) => !used.has(c)) ?? teamColors[teams.length % teamColors.length];
+      const r = await upsertTeam(null, v, color, 0);
       if (r.ok) {
         setName("");
         router.refresh();
       } else toast.error(r.error);
+    });
+  }
+  function recolor(t: Team, color: string) {
+    setPicking(null);
+    start(async () => {
+      const r = await upsertTeam(t.id, t.name, color, t.min_present);
+      if (r.ok) router.refresh();
+      else toast.error(r.error);
     });
   }
   function remove(id: string) {
@@ -287,7 +298,7 @@ function TeamsStep({ org, teams }: { org: Organization; teams: Team[] }) {
   return (
     <>
       <StepHeader title="Vos équipes">
-        Une équipe regroupe les personnes qui se remplacent : un service, un atelier, un magasin. Elle sert au planning et, avec l&apos;offre Pro, à l&apos;effectif minimum. Cette étape est facultative.
+        Une équipe regroupe les personnes qui se remplacent : un service, un atelier, un magasin. Elle sert au planning et, avec l&apos;offre Pro, à l&apos;effectif minimum. Cliquez sur la pastille pour changer sa couleur. Cette étape est facultative.
       </StepHeader>
       <form
         className="flex gap-2"
@@ -315,12 +326,35 @@ function TeamsStep({ org, teams }: { org: Organization; teams: Team[] }) {
           <li className="px-4 py-6 text-center text-sm text-muted">Aucune équipe pour l&apos;instant.</li>
         ) : (
           teams.map((t) => (
-            <li key={t.id} className="flex items-center gap-3 px-4 py-3">
-              <span className="size-3 rounded-[4px]" style={{ background: t.color }} />
+            <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+              <button
+                type="button"
+                onClick={() => setPicking(picking === t.id ? null : t.id)}
+                aria-expanded={picking === t.id}
+                aria-label={`Changer la couleur de ${t.name}`}
+                className="flex size-7 items-center justify-center rounded-ctl transition-colors hover:bg-surface"
+              >
+                <span className="size-3.5 rounded-[4px] ring-2 ring-white ring-offset-1 ring-offset-line" style={{ background: t.color }} />
+              </button>
               <span className="flex-1 font-medium">{t.name}</span>
               <button type="button" onClick={() => remove(t.id)} disabled={pending} className="rounded-ctl p-1.5 text-muted transition-colors hover:bg-danger-soft hover:text-danger" aria-label={`Supprimer ${t.name}`}>
                 <Trash2 className="size-4" />
               </button>
+              {picking === t.id && (
+                <div className="menu-drop flex w-full flex-wrap gap-2 pl-10" role="group" aria-label="Couleurs">
+                  {teamColors.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => recolor(t, c)}
+                      aria-label={`Couleur ${c}`}
+                      aria-pressed={t.color === c}
+                      className={cn("size-7 rounded-full transition-transform hover:scale-110", t.color === c && "ring-2 ring-ink ring-offset-2")}
+                      style={{ background: c }}
+                    />
+                  ))}
+                </div>
+              )}
             </li>
           ))
         )}
@@ -336,7 +370,7 @@ function PeopleStep({ teams, members, meId }: { teams: Team[]; members: SetupMem
   const [pending, start] = useTransition();
   const [role, setRole] = useState<Role>("employee");
   const [formKey, setFormKey] = useState(0);
-  const managers = members.filter((m) => m.role !== "employee" || m.id === meId);
+  const managers = members.filter((m) => m.role === "manager");
   const teamName = new Map(teams.map((t) => [t.id, t.name]));
   const memberName = new Map(members.map((m) => [m.id, `${m.first_name} ${m.last_name}`]));
 
@@ -411,13 +445,12 @@ function PeopleStep({ teams, members, meId }: { teams: Team[]; members: SetupMem
             ))}
           </Select>
         </Field>
-        <Field label="Manager (valide ses demandes)" htmlFor="p-manager">
+        <Field label="Manager (valide ses demandes)" htmlFor="p-manager" hint={managers.length ? undefined : "Ajoutez d'abord une personne au rôle Manager."}>
           <Select id="p-manager" name="manager_id" defaultValue="">
             <option value="">Aucun : les RH valident</option>
             {managers.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.first_name} {m.last_name}
-                {m.id === meId ? " (vous)" : ""}
               </option>
             ))}
           </Select>

@@ -9,7 +9,7 @@ import { Panel } from "@/components/ui/display";
 import { Field, Input, Select } from "@/components/ui/field";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/overlays";
 import { MemberForm } from "@/components/app/member-form";
-import type { LeaveType, Member, MemberContract, Team } from "@/lib/types";
+import type { LeaveType, Member, MemberContract, Role, Team } from "@/lib/types";
 import { adjustBalance, anonymizeMember, sendInvitation, setMemberActive } from "@/app/app/actions/admin";
 
 export function MemberAdmin({
@@ -24,7 +24,7 @@ export function MemberAdmin({
   member: Member;
   contract: MemberContract | null;
   teams: Pick<Team, "id" | "name">[];
-  managers: { id: string; name: string }[];
+  managers: { id: string; name: string; role: Role }[];
   types: Pick<LeaveType, "id" | "name">[];
   isAdmin: boolean;
   isSelf: boolean;

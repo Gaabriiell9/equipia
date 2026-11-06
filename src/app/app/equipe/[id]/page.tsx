@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { BalanceTable } from "@/components/app/balances";
 import { LedgerHistory } from "@/components/app/ledger";
 import { RequestRow, type RequestWithRefs } from "@/components/app/request-row";
-import type { LedgerEntry, LeaveType, Member, MemberContract, Team } from "@/lib/types";
+import type { LedgerEntry, LeaveType, Member, MemberContract, Role, Team } from "@/lib/types";
 import { MemberAdmin } from "./member-admin";
 
 export const metadata: Metadata = { title: "Fiche salarié" };
@@ -30,7 +30,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     ctx.supabase.from("leave_requests").select(REQUEST_SELECT).eq("member_id", id).order("start_date", { ascending: false }).limit(50),
     ctx.supabase.from("leave_ledger").select("*, leave_types(name, color)").eq("member_id", id).order("created_at", { ascending: false }).limit(40),
     ctx.supabase.from("teams").select("id, name").eq("org_id", ctx.org.id).order("name"),
-    ctx.supabase.from("members").select("id, first_name, last_name, status").eq("org_id", ctx.org.id).neq("status", "disabled").order("last_name"),
+    ctx.supabase.from("members").select("id, first_name, last_name, status, role").eq("org_id", ctx.org.id).neq("status", "disabled").order("last_name"),
     ctx.supabase.from("leave_types").select("id, name, deducts_balance, active").eq("org_id", ctx.org.id).eq("deducts_balance", true).eq("active", true).order("position"),
   ]);
   const c = contract as MemberContract | null;
@@ -115,7 +115,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               member={member}
               contract={c}
               teams={(teams ?? []) as Pick<Team, "id" | "name">[]}
-              managers={(all ?? []).map((x) => ({ id: x.id, name: `${x.first_name} ${x.last_name}` }))}
+              managers={(all ?? []).map((x) => ({ id: x.id, name: `${x.first_name} ${x.last_name}`, role: x.role as Role }))}
               types={(types ?? []) as Pick<LeaveType, "id" | "name">[]}
               isAdmin={ctx.isAdmin}
               isSelf={member.id === ctx.member.id}

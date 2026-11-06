@@ -10,6 +10,7 @@ import type { Member, MemberContract, Role, Team } from "@/lib/types";
 import { inviteMember, updateMember } from "@/app/app/actions/admin";
 
 type Opt = { id: string; name: string };
+type ManagerOpt = Opt & { role: Role };
 
 export function MemberForm({
   member,
@@ -22,7 +23,7 @@ export function MemberForm({
   member?: Member;
   contract?: MemberContract | null;
   teams: Pick<Team, "id" | "name">[];
-  managers: Opt[];
+  managers: ManagerOpt[];
   isAdmin: boolean;
   onDone?: () => void;
 }) {
@@ -125,7 +126,8 @@ export function MemberForm({
           <Select id="m-manager" name="manager_id" defaultValue={member?.manager_id ?? ""}>
             <option value="">Aucun (validation par les RH)</option>
             {managers
-              .filter((m) => m.id !== member?.id)
+              // Seuls les comptes au rôle Manager peuvent valider (le manager actuel reste affiché)
+              .filter((m) => m.id !== member?.id && (m.role === "manager" || m.id === member?.manager_id))
               .map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}

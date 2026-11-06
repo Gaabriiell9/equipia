@@ -45,7 +45,7 @@ export function TeamDirectory({
     });
   }, [members, q, team, status]);
 
-  const managers = members.filter((m) => m.status !== "disabled").map((m) => ({ id: m.id, name: `${m.first_name} ${m.last_name}` }));
+  const managers = members.filter((m) => m.status !== "disabled").map((m) => ({ id: m.id, name: `${m.first_name} ${m.last_name}`, role: m.role }));
   const invited = members.filter((m) => m.status === "invited" && !m.is_demo).length;
 
   return (
