@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
 import { fmtNum, periodLabel } from "@/lib/format";
+import { ProUpsell } from "@/components/ui/pro";
 import { closePeriod, computeFractionnement, runAccruals } from "@/app/app/actions/admin";
 
 type FracRow = { member_id: string; name: string; acquired: number; taken_in_window: number; principal_outside: number; days: number; reason: string | null; already_applied: boolean };
@@ -16,12 +17,14 @@ export function CounterTools({
   cpPeriods,
   fractionnementEnabled,
   cpCounting,
+  pro,
 }: {
   lastMonth: string;
   periods: { typeId: string; name: string; kind: "cp" | "civil"; options: string[] }[];
   cpPeriods: string[];
   fractionnementEnabled: boolean;
   cpCounting: string;
+  pro: boolean;
 }) {
   const [pending, start] = useTransition();
   const [month, setMonth] = useState(lastMonth);
@@ -61,7 +64,7 @@ export function CounterTools({
         </div>
       </section>
 
-      {cpPeriods.length > 0 && (
+      {pro && cpPeriods.length > 0 && (
         <section className="p-5">
           <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
             <div>
@@ -130,6 +133,11 @@ export function CounterTools({
         </section>
       )}
 
+      {!pro ? (
+        <section className="p-5">
+          <ProUpsell title="Fractionnement et clôture des périodes" description="Calcul des jours de fractionnement après le 31 octobre et clôture de période avec aperçu du report et des jours perdus." />
+        </section>
+      ) : (
       <section className="p-5">
         <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
           <div>
@@ -213,6 +221,7 @@ export function CounterTools({
           </div>
         )}
       </section>
+      )}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { requireHR } from "@/lib/auth";
+import { isPro } from "@/lib/plan";
+import { ProUpsell } from "@/components/ui/pro";
 import { fmtDateTime } from "@/lib/format";
 import { EmptyState, PageHeader, Panel } from "@/components/ui/display";
 
@@ -40,6 +42,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const sp = await searchParams;
   const page = Math.max(0, Number(sp.page ?? 0) || 0);
   const ctx = await requireHR();
+  if (!isPro(ctx.org)) {
+    return (
+      <>
+        <PageHeader title="Journal d'audit" description="Qui a validé, ajusté ou modifié quoi, et quand." />
+        <ProUpsell title="Journal d'audit" description="Toutes les actions sont enregistrées depuis la création de votre espace. Passez en Pro pour les consulter et les présenter en cas de contrôle ou de litige." />
+      </>
+    );
+  }
   const [{ data: logs }, { data: members }] = await Promise.all([
     ctx.supabase.from("audit_log").select("*").eq("org_id", ctx.org.id).order("created_at", { ascending: false }).range(page * PAGE, page * PAGE + PAGE),
     ctx.supabase.from("members").select("id, first_name, last_name").eq("org_id", ctx.org.id),

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PricingCards } from "@/components/site/pricing";
+import { FeatureComparison, PricingCards } from "@/components/site/pricing";
 import { Faq } from "@/components/site/faq";
 import { brand, trialDays } from "@/lib/config";
 
@@ -21,8 +21,25 @@ export default function Page() {
             <PricingCards />
           </div>
           <p className="mt-6 text-sm text-muted">
-            Prix hors taxes, facturation mensuelle. Exemple : 25 salariés en offre Pro = 125 € HT par mois.
+            Prix hors taxes, facturation mensuelle. Exemple pour 25 salariés : 75 € HT par mois en Essentiel, 125 € HT en Pro.
           </p>
+        </div>
+      </section>
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-[1160px] px-5 py-20">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <h2 className="font-condensed text-[2.4rem] leading-[1.02] font-bold">Essentiel ou Pro ?</h2>
+              <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
+                Essentiel remplace le fichier Excel et les e-mails : demandes, validation, soldes et planning.
+              </p>
+              <p className="mt-3 text-[17px] leading-relaxed text-ink-soft">
+                Pro s&apos;adresse aux entreprises qui ont des RH ou des règles à faire respecter : une deuxième validation, un effectif à tenir, des fins de période à clôturer, des indicateurs à présenter. Une seule erreur de solde évitée en fin d&apos;année rembourse souvent la différence.
+              </p>
+              <p className="mt-3 text-[15px] text-muted">Pendant l&apos;essai, toutes les fonctionnalités Pro sont ouvertes.</p>
+            </div>
+            <FeatureComparison />
+          </div>
         </div>
       </section>
       <section className="bg-surface">

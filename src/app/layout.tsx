@@ -14,11 +14,11 @@ const instrument = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(brand.siteUrl),
   title: {
-    default: `${brand.name} : gestion des congés et absences pour PME et restaurants`,
+    default: `${brand.name} : gestion des congés et absences pour les entreprises`,
     template: `%s | ${brand.name}`,
   },
   description:
-    "Demandes de congés, validation en un clic, soldes calculés automatiquement selon le droit français et calendrier d'équipe. Pensé pour les PME et l'hôtellerie-restauration.",
+    "Demandes de congés, validation en un clic, soldes calculés automatiquement selon le droit français et calendrier d'équipe. Pour toutes les entreprises de 5 à 150 salariés, quel que soit le secteur.",
   applicationName: brand.name,
   openGraph: {
     type: "website",

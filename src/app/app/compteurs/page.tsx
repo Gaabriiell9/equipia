@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader, Panel, PanelHeader } from "@/components/ui/display";
 import type { LeaveType } from "@/lib/types";
 import { CounterTools } from "./tools";
+import { isPro } from "@/lib/plan";
 
 export const metadata: Metadata = { title: "Compteurs" };
 
@@ -108,6 +109,7 @@ export default async function Page() {
             cpPeriods={cpType ? periods.find((p) => p.typeId === cpType.id)!.options : []}
             fractionnementEnabled={ctx.org.fractionnement_enabled}
             cpCounting={ctx.org.cp_counting}
+            pro={isPro(ctx.org)}
           />
         </Panel>
       </div>

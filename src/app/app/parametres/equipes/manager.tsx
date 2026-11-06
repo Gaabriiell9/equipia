@@ -13,7 +13,7 @@ import { deleteTeam, upsertTeam } from "@/app/app/actions/admin";
 
 const palette = ["#2563eb", "#ea580c", "#7c3aed", "#059669", "#db2777", "#0891b2", "#a16207", "#475569"];
 
-export function TeamsManager({ teams, counts }: { teams: Team[]; counts: Record<string, number> }) {
+export function TeamsManager({ teams, counts, pro }: { teams: Team[]; counts: Record<string, number>; pro: boolean }) {
   const [editing, setEditing] = useState<Team | "new" | null>(null);
   const [pending, start] = useTransition();
   const current = editing && editing !== "new" ? editing : null;
@@ -83,10 +83,14 @@ export function TeamsManager({ teams, counts }: { teams: Team[]; counts: Record<
               }
             >
               <Field label="Nom" htmlFor="team-name">
-                <Input id="team-name" name="name" defaultValue={current?.name} required maxLength={80} placeholder="Ex. : Cuisine" />
+                <Input id="team-name" name="name" defaultValue={current?.name} required maxLength={80} placeholder="Ex. : Commercial, Atelier, Accueil" />
               </Field>
-              <Field label="Effectif minimum présent" htmlFor="team-min" hint="0 pour ne pas surveiller l'effectif.">
-                <Input id="team-min" name="min" type="number" min={0} max={500} defaultValue={current?.min_present ?? 0} className="w-28" />
+              <Field
+                label={pro ? "Effectif minimum présent" : "Effectif minimum présent (offre Pro)"}
+                htmlFor="team-min"
+                hint={pro ? "0 pour ne pas surveiller l'effectif." : "Avec l'offre Pro, une alerte prévient le manager avant qu'il valide une absence qui ferait passer l'équipe sous ce seuil."}
+              >
+                <Input id="team-min" name="min" type="number" min={0} max={500} defaultValue={current?.min_present ?? 0} disabled={!pro} className="w-28" />
               </Field>
               <div>
                 <p className="mb-1.5 text-sm font-semibold">Couleur</p>

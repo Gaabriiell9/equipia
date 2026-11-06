@@ -19,5 +19,5 @@ export async function createOrganization(_: ActionResult | null, formData: FormD
   });
   if (error) return fail(error);
   (await cookies()).set(ORG_COOKIE, data as string, { path: "/", httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 60 * 60 * 24 * 365 });
-  redirect("/app?bienvenue=1");
+  redirect("/onboarding/parametrage");
 }

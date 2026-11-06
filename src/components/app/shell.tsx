@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import {
   Bell,
   BookOpenCheck,
@@ -81,7 +81,7 @@ function isActive(path: string, item: NavItem) {
   return item.exact ? path === item.href : path === item.href || path.startsWith(item.href + "/");
 }
 
-function NavList({ p, onNavigate }: { p: ShellProps; onNavigate?: () => void }) {
+function NavList({ p, onNavigate, indicator }: { p: ShellProps; onNavigate?: () => void; indicator?: boolean }) {
   const path = usePathname();
   return (
     <nav className="flex flex-col gap-5" aria-label="Navigation principale">
@@ -98,14 +98,19 @@ function NavList({ p, onNavigate }: { p: ShellProps; onNavigate?: () => void }) 
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex h-10 items-center gap-3 rounded-ctl px-3 text-[15px] text-ink-soft transition-colors hover:bg-surface hover:text-ink",
+                      "relative flex h-10 items-center gap-3 rounded-ctl px-3 text-[15px] text-ink-soft transition-colors hover:bg-surface hover:text-ink",
                       active && "bg-surface font-semibold text-ink",
                     )}
                   >
-                    <item.icon className={cn("size-[18px] text-muted", active && "text-ink")} />
-                    <span className="flex-1">{item.label}</span>
+                    {active && indicator && (
+                      <ViewTransition name="sidebar-indicator" share="indicator">
+                        <span className="absolute top-2 bottom-2 left-0 w-[3px] rounded-r-full bg-ink" aria-hidden />
+                      </ViewTransition>
+                    )}
+                    <item.icon className={cn("relative size-[18px] text-muted", active && "text-ink")} />
+                    <span className="relative flex-1">{item.label}</span>
                     {!!item.badge && (
-                      <span className="tabular rounded-full bg-marker px-2 py-0.5 text-xs font-bold text-ink">{item.badge}</span>
+                      <span className="tabular relative rounded-full bg-marker px-2 py-0.5 text-xs font-bold text-ink">{item.badge}</span>
                     )}
                   </Link>
                 </li>
@@ -170,6 +175,19 @@ function UserMenu({ p, compact }: { p: ShellProps; compact?: boolean }) {
   );
 }
 
+function MobileTab({ href, active, icon: Icon, label }: { href: string; active: boolean; icon: React.ComponentType<{ className?: string }>; label: string }) {
+  return (
+    <Link href={href} aria-current={active ? "page" : undefined} className={cn("relative flex h-full flex-col items-center justify-center gap-0.5 text-[11px] text-muted transition-colors", active && "font-semibold text-ink")}>
+      {active && (
+        <ViewTransition name="mobile-tab-indicator" share="indicator">
+          <span className="absolute top-0 h-[3px] w-8 rounded-b-full bg-ink" aria-hidden />
+        </ViewTransition>
+      )}
+      <Icon className="size-5" /> {label}
+    </Link>
+  );
+}
+
 export function AppShell(p: ShellProps) {
   const [moreOpen, setMoreOpen] = useState(false);
   const path = usePathname();
@@ -205,7 +223,7 @@ export function AppShell(p: ShellProps) {
           <Plus className="size-[18px]" /> Poser une absence
         </Link>
         <div className="mt-5 flex-1 overflow-y-auto">
-          <NavList p={p} />
+          <NavList p={p} indicator />
         </div>
         <div className="border-t border-line pt-3">
           <UserMenu p={p} />
@@ -244,20 +262,14 @@ export function AppShell(p: ShellProps) {
       {/* Onglets (mobile) */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Navigation mobile">
         <div className="grid h-16 grid-cols-5 items-center">
-          <Link href="/app" className={cn("flex flex-col items-center gap-0.5 text-[11px] text-muted", tab("/app", true) && "font-semibold text-ink")}>
-            <Home className="size-5" /> Accueil
-          </Link>
-          <Link href="/app/absences" className={cn("flex flex-col items-center gap-0.5 text-[11px] text-muted", tab("/app/absences") && !tab("/app/absences/nouvelle") && "font-semibold text-ink")}>
-            <CalendarDays className="size-5" /> Absences
-          </Link>
+          <MobileTab href="/app" active={tab("/app", true)} icon={Home} label="Accueil" />
+          <MobileTab href="/app/absences" active={tab("/app/absences") && !tab("/app/absences/nouvelle")} icon={CalendarDays} label="Absences" />
           <Link href="/app/absences/nouvelle" className="flex flex-col items-center" aria-label="Poser une absence">
             <span className="flex size-12 -translate-y-2 items-center justify-center rounded-[14px] bg-marker text-ink shadow-[0_4px_14px_rgba(220,170,18,0.45)]">
               <Plus className="size-6" />
             </span>
           </Link>
-          <Link href="/app/calendrier" className={cn("flex flex-col items-center gap-0.5 text-[11px] text-muted", tab("/app/calendrier") && "font-semibold text-ink")}>
-            <CalendarRange className="size-5" /> Planning
-          </Link>
+          <MobileTab href="/app/calendrier" active={tab("/app/calendrier")} icon={CalendarRange} label="Planning" />
           <button onClick={() => setMoreOpen(true)} className="relative flex flex-col items-center gap-0.5 text-[11px] text-muted">
             <MenuIcon className="size-5" /> Plus
             {p.pendingCount > 0 && <span className="absolute top-0 right-[calc(50%-16px)] size-2 rounded-full bg-marker-strong" />}

@@ -7,6 +7,7 @@ import { ConfirmButton } from "@/components/ui/confirm";
 import { Panel, PanelHeader } from "@/components/ui/display";
 import { Input, Select } from "@/components/ui/field";
 import { Switch } from "@/components/ui/overlays";
+import { ProBadge } from "@/components/ui/pro";
 import { cn, regionLabels, weekDays } from "@/lib/format";
 import type { Organization } from "@/lib/types";
 import { addDemoData, deleteOrganization, updateOrgSettings } from "@/app/app/actions/admin";
@@ -21,11 +22,14 @@ const timezones: [string, string][] = [
   ["Indian/Mayotte", "Mayotte"],
 ];
 
-function Row({ title, description, children }: { title: string; description?: React.ReactNode; children: React.ReactNode }) {
+function Row({ title, description, children, pro }: { title: string; description?: React.ReactNode; children: React.ReactNode; pro?: boolean }) {
   return (
     <div className="flex flex-col gap-3 border-b border-line px-5 py-4 last:border-0 sm:flex-row sm:items-center sm:justify-between">
       <div className="max-w-xl">
-        <p className="text-[15px] font-semibold">{title}</p>
+        <p className="flex items-center gap-2 text-[15px] font-semibold">
+          {title}
+          {pro && <ProBadge />}
+        </p>
         {description && <p className="mt-0.5 text-[13px] text-muted">{description}</p>}
       </div>
       <div className="shrink-0">{children}</div>
@@ -33,7 +37,8 @@ function Row({ title, description, children }: { title: string; description?: Re
   );
 }
 
-export function SettingsForm({ org, isAdmin }: { org: Organization; isAdmin: boolean }) {
+export function SettingsForm({ org, isAdmin, pro }: { org: Organization; isAdmin: boolean; pro: boolean }) {
+  const locked = !pro;
   const [v, setV] = useState({ ...org });
   const [pending, start] = useTransition();
   const set = <K extends keyof Organization>(k: K, val: Organization[K]) => setV((x) => ({ ...x, [k]: val }));
@@ -60,8 +65,10 @@ export function SettingsForm({ org, isAdmin }: { org: Organization; isAdmin: boo
         </Row>
         <Row title="Secteur" description="Le pack hôtellerie-restauration active le suivi des 6 fériés garantis (convention HCR, IDCC 1979).">
           <Select value={v.sector} onChange={(e) => set("sector", e.target.value as Organization["sector"])} disabled={!isAdmin} className="w-72">
-            <option value="general">Autre secteur</option>
-            <option value="hcr">Hôtellerie, cafés, restaurants (HCR)</option>
+            <option value="general">Tous secteurs</option>
+            <option value="hcr" disabled={locked && org.sector !== "hcr"}>
+              Hôtellerie, cafés, restaurants (HCR){locked ? " : offre Pro" : ""}
+            </option>
           </Select>
         </Row>
         <Row title="Fuseau horaire">
@@ -125,7 +132,7 @@ export function SettingsForm({ org, isAdmin }: { org: Organization; isAdmin: boo
         <Row title="Congés par anticipation" description="Autorise à poser des jours en cours d'acquisition (période N), et pas seulement ceux de la période précédente.">
           <Switch checked={v.allow_anticipation} onCheckedChange={(c) => set("allow_anticipation", c)} aria-label="Congés par anticipation" />
         </Row>
-        <Row title="Solde négatif" description="Autorise les salariés à descendre sous zéro, dans la limite indiquée.">
+        <Row pro={locked} title="Solde négatif" description="Autorise les salariés à descendre sous zéro, dans la limite indiquée.">
           <div className="flex items-center gap-3">
             {v.allow_negative_balance && (
               <span className="flex items-center gap-1.5 text-sm">
@@ -134,12 +141,12 @@ export function SettingsForm({ org, isAdmin }: { org: Organization; isAdmin: boo
                 j
               </span>
             )}
-            <Switch checked={v.allow_negative_balance} onCheckedChange={(c) => set("allow_negative_balance", c)} aria-label="Solde négatif autorisé" />
+            <Switch checked={v.allow_negative_balance} onCheckedChange={(c) => set("allow_negative_balance", c)} disabled={locked && !org.allow_negative_balance} aria-label="Solde négatif autorisé" />
           </div>
         </Row>
-        <Row title="Délai de prévenance" description="Nombre de jours minimum entre la demande et le début des congés (0 = aucun).">
+        <Row pro={locked} title="Délai de prévenance" description="Nombre de jours minimum entre la demande et le début des congés (0 = aucun).">
           <span className="flex items-center gap-1.5 text-sm">
-            <Input type="number" min={0} max={365} value={v.min_notice_days} onChange={(e) => set("min_notice_days", Number(e.target.value))} className="w-20" /> jours
+            <Input type="number" min={0} max={365} disabled={locked} value={v.min_notice_days} onChange={(e) => set("min_notice_days", Number(e.target.value))} className="w-20" /> jours
           </span>
         </Row>
         <Row title="Jours de fractionnement" description="Calcul assisté après le 31 octobre. Désactivez si vos salariés y renoncent par accord.">
@@ -149,11 +156,11 @@ export function SettingsForm({ org, isAdmin }: { org: Organization; isAdmin: boo
 
       <Panel>
         <PanelHeader title="Validation et sécurité" />
-        <Row title="Double validation" description="Après l'accord du manager, la demande doit aussi être validée par les RH.">
-          <Switch checked={v.hr_approval_required} onCheckedChange={(c) => set("hr_approval_required", c)} aria-label="Double validation" />
+        <Row pro={locked} title="Double validation" description="Après l'accord du manager, la demande doit aussi être validée par les RH.">
+          <Switch checked={v.hr_approval_required} onCheckedChange={(c) => set("hr_approval_required", c)} disabled={locked && !org.hr_approval_required} aria-label="Double validation" />
         </Row>
-        <Row title="Double authentification obligatoire" description="Les RH et administrateurs devront configurer une application d'authentification (Google Authenticator, Microsoft Authenticator...).">
-          <Switch checked={v.mfa_required} onCheckedChange={(c) => set("mfa_required", c)} disabled={!isAdmin} aria-label="Double authentification obligatoire" />
+        <Row pro={locked} title="Double authentification obligatoire" description="Les RH et administrateurs devront configurer une application d'authentification (Google Authenticator, Microsoft Authenticator...).">
+          <Switch checked={v.mfa_required} onCheckedChange={(c) => set("mfa_required", c)} disabled={!isAdmin || (locked && !org.mfa_required)} aria-label="Double authentification obligatoire" />
         </Row>
       </Panel>
 

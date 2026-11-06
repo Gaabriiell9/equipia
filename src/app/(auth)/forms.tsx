@@ -78,8 +78,8 @@ export function SignUpForm() {
       <div className="grid grid-cols-2 gap-3">
         <Field label="Secteur" htmlFor="sector">
           <Select id="sector" name="sector" defaultValue="general">
-            <option value="general">Autre secteur</option>
-            <option value="hcr">Hôtellerie, restauration</option>
+            <option value="general">Tous secteurs</option>
+            <option value="hcr">Hôtellerie, restauration (HCR)</option>
           </Select>
         </Field>
         <Field label="Effectif" htmlFor="size">

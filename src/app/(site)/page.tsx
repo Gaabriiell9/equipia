@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { AlertTriangle, Check, Download, Lock, ShieldCheck, EyeOff, ScrollText, Server, Smartphone } from "lucide-react";
+import { AlertTriangle, Briefcase, Building2, Check, Download, EyeOff, HardHat, HeartPulse, Lock, ScrollText, Server, ShieldCheck, Store, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HeroPlanning } from "@/components/site/hero-planning";
 import { PricingCards } from "@/components/site/pricing";
 import { Faq } from "@/components/site/faq";
+import { PhoneRequest } from "@/components/site/phone-request";
 import { brand, trialDays } from "@/lib/config";
 
 const rules = [
@@ -15,12 +16,21 @@ const rules = [
   { rule: "Périodes N-1 et N, report et perte des jours", does: "Les jours les plus anciens partent en premier. Clôture de période avec aperçu du report et des jours perdus." },
 ];
 
+const sectors = [
+  { i: Briefcase, t: "Bureaux et services", d: "RTT acquis chaque mois, télétravail posé en deux clics et compté comme présent dans l'effectif de l'équipe." },
+  { i: Store, t: "Commerce et distribution", d: "Ouverture le samedi prise en compte, effectif minimum par magasin ou par rayon pendant les périodes chargées." },
+  { i: HardHat, t: "Industrie, BTP, artisanat", d: "Accidents du travail suivis à part sans réduire l'acquisition des congés, équipes par atelier ou par chantier." },
+  { i: HeartPulse, t: "Santé, social, associations", d: "Planning sur 7 jours, double validation par le responsable puis les RH, arrêts maladie confidentiels." },
+  { i: UtensilsCrossed, t: "Hôtellerie-restauration", d: "Pack convention HCR : 6 fériés garantis, 1er mai travaillé signalé à la paie, saisonniers et extras.", href: "/hotellerie-restauration" },
+  { i: Building2, t: "Plusieurs établissements", d: "Un espace par site, un seul compte pour passer de l'un à l'autre. Chaque établissement garde ses règles." },
+];
+
 const faq = [
   { q: "Combien de temps faut-il pour démarrer ?", a: "Une minute pour créer l'espace : les types d'absence courants sont créés selon le droit français. Ensuite, importez vos salariés depuis un fichier CSV (export de votre logiciel de paie ou Excel) avec leurs soldes actuels, et envoyez les invitations. La plupart des équipes sont opérationnelles le jour même." },
-  { q: "Comment reprendre les soldes de congés actuels ?", a: "Le fichier d'import accepte les colonnes CP N-1, CP N, RTT, récupération et, pour l'hôtellerie-restauration, les fériés garantis. Vous pouvez aussi ajuster un compteur à la main depuis la fiche du salarié, avec un motif tracé dans l'historique." },
+  { q: "Comment reprendre les soldes de congés actuels ?", a: "Le fichier d'import accepte les colonnes CP N-1, CP N, RTT et récupération (et les fériés garantis si vous relevez de la convention HCR). Vous pouvez aussi ajuster un compteur à la main depuis la fiche du salarié, avec un motif tracé dans l'historique." },
   { q: "Mes salariés doivent-ils installer une application ?", a: "Non. Équipia fonctionne dans le navigateur du téléphone comme une application : menu en bas d'écran, bouton pour poser une absence, notifications par e-mail. Chacun peut aussi ajouter le planning de l'équipe à son agenda Google, Outlook ou Apple." },
   { q: "Les collègues voient-ils les arrêts maladie ?", a: "Non. Les motifs sensibles (maladie, accident du travail, absences confidentielles) n'apparaissent qu'au salarié, à sa ligne managériale et aux RH. Les collègues voient seulement « Absent » dans le planning." },
-  { q: "Gérez-vous les conventions collectives ?", a: "La convention HCR (hôtels, cafés, restaurants) est prise en charge avec le suivi des 6 jours fériés garantis et du 1er mai. Pour les autres conventions, les règles se paramètrent : décompte en jours ouvrables ou ouvrés, période de référence, anticipation, report maximum, ancienneté requise, délai de prévenance." },
+  { q: "Mon secteur a des règles particulières, est-ce adapté ?", a: "Oui. Bureaux, commerce, industrie, BTP, santé, associations, hôtellerie-restauration : les règles se paramètrent selon votre convention ou votre accord d'entreprise (décompte en jours ouvrables ou ouvrés, jours d'ouverture, période de référence, anticipation, report maximum, ancienneté requise, délai de prévenance). La convention HCR dispose en plus d'un pack dédié : 6 fériés garantis et 1er mai travaillé." },
   { q: "Et la paie ?", a: "L'export du mois liste chaque absence validée avec le nombre de jours sur la période (absences à cheval incluses), le matricule et les fériés travaillés. Il s'ouvre dans Excel et se transmet à votre expert-comptable. Des connecteurs vers les logiciels de paie sont disponibles sur demande." },
   { q: "Puis-je arrêter quand je veux ?", a: "Oui, l'abonnement est sans engagement. Vous pouvez exporter toutes vos données à tout moment, puis supprimer définitivement votre espace depuis les paramètres." },
 ];
@@ -33,10 +43,10 @@ export default function Page() {
         <div className="mx-auto grid max-w-[1160px] items-center gap-14 px-5 pt-14 pb-20 lg:grid-cols-[1fr_1.1fr] lg:pt-20 lg:pb-24">
           <div>
             <h1 className="font-condensed text-[3.1rem] leading-[0.98] font-bold tracking-[-0.015em] text-balance sm:text-[4.2rem]">
-              Les congés de l&apos;équipe, sans Excel ni e-mails perdus
+              Excel n&apos;a jamais été pensé pour gérer les congés de votre équipe.
             </h1>
             <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-ink-soft">
-              Vos salariés posent leurs congés depuis leur téléphone, le manager valide en un clic et les soldes se calculent seuls, selon le Code du travail. Pensé pour les PME et l&apos;hôtellerie-restauration.
+              {brand.name}, si. Vos salariés posent leurs congés depuis leur téléphone, le manager valide en un clic et les soldes se calculent seuls, selon le Code du travail. Pour toutes les entreprises de 5 à 150 salariés, quel que soit le secteur.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
@@ -125,28 +135,26 @@ export default function Page() {
         </div>
       </section>
 
-      {/* HCR */}
-      <section className="bg-navy-800 text-white">
-        <div className="mx-auto grid max-w-[1160px] gap-12 px-5 py-20 lg:grid-cols-[1fr_1fr]">
-          <div>
-            <h2 className="font-condensed text-[2.6rem] leading-[1.02] font-bold sm:text-[3.2rem]">Fait pour l&apos;hôtellerie-restauration</h2>
-            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-white/75">
-              Services en coupure, fériés travaillés, saisonniers, effectif à tenir en cuisine et en salle : la convention HCR a ses propres règles. {brand.name} les connaît.
+      {/* Secteurs */}
+      <section id="secteurs" className="scroll-mt-20 bg-navy-800 text-white">
+        <div className="mx-auto max-w-[1160px] px-5 py-20">
+          <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-end">
+            <h2 className="font-condensed text-[2.6rem] leading-[1.02] font-bold sm:text-[3.2rem]">Bureau, boutique, atelier ou restaurant</h2>
+            <p className="max-w-lg text-[17px] leading-relaxed text-white/75">
+              Jours d&apos;ouverture, décompte, effectif à tenir, circuit de validation : {brand.name} se règle sur votre façon de travailler, pas l&apos;inverse.
             </p>
-            <Button asChild size="lg" className="mt-8">
-              <Link href="/hotellerie-restauration">Découvrir le pack HCR</Link>
-            </Button>
           </div>
-          <dl className="grid gap-px overflow-hidden rounded-[18px] bg-white/10 sm:grid-cols-2">
-            {[
-              { t: "6 fériés garantis suivis", d: "Crédités chaque année après un an d'ancienneté, au prorata sinon. Chaque férié chômé est décompté, le reste est à récupérer ou à payer." },
-              { t: "1er mai travaillé repéré", d: "Signalé dans l'export paie avec la mention de rémunération doublée." },
-              { t: "Effectif minimum par poste", d: "Cuisine, salle, réception : alerte dès qu'une demande fait passer l'équipe sous le seuil." },
-              { t: "Saisonniers et extras", d: "Contrats datés, fins de contrat bloquant les demandes au-delà, import depuis la paie." },
-            ].map((x) => (
+          <dl className="mt-12 grid gap-px overflow-hidden rounded-[18px] bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+            {sectors.map((x) => (
               <div key={x.t} className="bg-navy-800 p-6">
-                <dt className="text-lg font-semibold">{x.t}</dt>
+                <x.i className="size-5 text-marker" />
+                <dt className="mt-3 text-lg font-semibold">{x.t}</dt>
                 <dd className="mt-2 text-[15px] leading-relaxed text-white/70">{x.d}</dd>
+                {x.href && (
+                  <Link href={x.href} className="mt-3 inline-block text-[15px] font-semibold text-marker underline underline-offset-4">
+                    Voir le pack HCR
+                  </Link>
+                )}
               </div>
             ))}
           </dl>
@@ -257,40 +265,6 @@ function RoleRow({ title, points, visual, reverse }: { title: string; points: st
   );
 }
 
-function PhoneRequest() {
-  return (
-    <div className="mx-auto w-[300px] rounded-[34px] border-[10px] border-navy-900 bg-surface p-3 shadow-[0_24px_50px_-20px_rgba(13,23,48,0.35)]" aria-hidden>
-      <div className="rounded-[18px] bg-paper p-4">
-        <p className="text-xs text-muted">Poser une absence</p>
-        <div className="mt-3 flex items-center gap-2 rounded-ctl border border-ink bg-surface px-3 py-2.5 ring-1 ring-ink">
-          <span className="size-2.5 rounded-[3px] bg-[#2563eb]" />
-          <span className="flex-1 text-sm font-semibold">Congés payés</span>
-          <span className="text-xs text-muted">22,5 j</span>
-        </div>
-        <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
-          <span className="rounded-ctl border border-line-strong px-3 py-2">21/12/2026</span>
-          <span className="rounded-ctl border border-line-strong px-3 py-2">31/12/2026</span>
-        </div>
-        <div className="mt-4 rounded-ctl bg-surface p-3">
-          <p className="flex items-baseline gap-1.5">
-            <span className="tabular font-condensed text-[2.4rem] leading-none font-bold">9</span>
-            <span className="text-sm text-muted">jours ouvrables</span>
-          </p>
-          <p className="mt-1 text-xs text-muted">Noël (25 déc.) non décompté</p>
-          <p className="mt-2 flex justify-between text-sm">
-            <span className="text-muted">Restant ensuite</span>
-            <span className="tabular font-bold">13,5 j</span>
-          </p>
-        </div>
-        <div className="mt-4 flex h-11 items-center justify-center rounded-ctl bg-marker text-sm font-semibold">Envoyer la demande</div>
-      </div>
-      <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-muted">
-        <Smartphone className="size-3" /> Depuis le navigateur du téléphone
-      </div>
-    </div>
-  );
-}
-
 function ApprovalMock() {
   return (
     <div className="rounded-[18px] border border-line bg-paper shadow-[0_24px_50px_-24px_rgba(13,23,48,0.3)]" aria-hidden>
@@ -307,7 +281,7 @@ function ApprovalMock() {
             </p>
             <p className="mt-1.5 flex items-start gap-1.5 text-[13px] text-wait">
               <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
-              Effectif minimum « Cuisine » non atteint le 17 nov. (1/2 présents).
+              Effectif minimum « Support client » non atteint le 17 nov. (1/2 présents).
             </p>
             <div className="mt-3 flex gap-2">
               <span className="inline-flex h-8 items-center gap-1.5 rounded-[7px] bg-ok px-3 text-[13px] font-semibold text-white">

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { isPro } from "@/lib/plan";
+import { ProUpsell } from "@/components/ui/pro";
 import type { Metadata } from "next";
 import { CalendarCheck2, Plus } from "lucide-react";
 import { getContext } from "@/lib/auth";
@@ -56,6 +58,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ b
   const absentToday = cal.filter((c) => c.status === "approved" && c.start_date <= today && c.end_date >= today);
   const absentWeek = cal.filter((c) => c.status === "approved" && !(c.start_date <= today && c.end_date >= today));
   const mineRows = (mine.data ?? []) as unknown as RequestWithRefs[];
+  const pro = isPro(ctx.org);
   const maxMonth = Math.max(1, ...(stats?.months ?? []).map((m) => Number(m.days)));
 
   return (
@@ -98,28 +101,38 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ b
 
       {stats && (
         <Panel>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-5 p-5 md:grid-cols-5">
+          <div className={pro ? "grid grid-cols-2 gap-x-6 gap-y-5 p-5 md:grid-cols-5" : "grid grid-cols-2 gap-x-6 gap-y-5 p-5 md:grid-cols-3"}>
             <Stat label="Effectif" value={stats.headcount} hint={stats.invited ? `dont ${stats.invited} sans compte` : undefined} />
             <Stat label="Absents aujourd'hui" value={stats.absent_today} hint={stats.remote_today ? `+ ${stats.remote_today} en télétravail` : undefined} />
             <Stat label="Demandes à traiter" value={stats.pending} tone={stats.pending > 0 ? "warn" : undefined} />
-            <Stat label="Absentéisme maladie" value={`${fmtNum(stats.absenteeism_rate, 1)} %`} hint="30 derniers jours" />
-            <Stat label="CP restant à prendre" value={fmtNum(stats.cp_liability, 0)} hint="jours, tous salariés" />
+            {pro && (
+              <>
+                <Stat label="Absentéisme maladie" value={`${fmtNum(stats.absenteeism_rate, 1)} %`} hint="30 derniers jours" />
+                <Stat label="CP restant à prendre" value={fmtNum(stats.cp_liability, 0)} hint="jours, tous salariés" />
+              </>
+            )}
           </div>
-          <div className="border-t border-line px-5 py-4">
-            <p className="mb-3 text-[13px] text-muted">Jours d&apos;absence par mois</p>
-            <div className="flex h-24 items-end gap-2" role="img" aria-label="Jours d'absence par mois">
-              {stats.months.map((m) => (
-                <div key={m.month} className="flex flex-1 flex-col items-center gap-1.5">
-                  <span className="tabular text-[11px] text-muted">{fmtNum(m.days, 0)}</span>
-                  <div
-                    className={m.month.slice(0, 7) === today.slice(0, 7) ? "w-full rounded-t-[4px] bg-marker" : "w-full rounded-t-[4px] bg-navy-600/80"}
-                    style={{ height: `${Math.max(3, (Number(m.days) / maxMonth) * 64)}px` }}
-                  />
-                  <span className="text-[11px] text-muted">{fmtDate(m.month, "MMM")}</span>
-                </div>
-              ))}
+          {pro ? (
+            <div className="border-t border-line px-5 py-4">
+              <p className="mb-3 text-[13px] text-muted">Jours d&apos;absence par mois</p>
+              <div className="flex h-24 items-end gap-2" role="img" aria-label="Jours d'absence par mois">
+                {stats.months.map((m) => (
+                  <div key={m.month} className="flex flex-1 flex-col items-center gap-1.5">
+                    <span className="tabular text-[11px] text-muted">{fmtNum(m.days, 0)}</span>
+                    <div
+                      className={m.month.slice(0, 7) === today.slice(0, 7) ? "w-full rounded-t-[4px] bg-marker" : "w-full rounded-t-[4px] bg-navy-600/80"}
+                      style={{ height: `${Math.max(3, (Number(m.days) / maxMonth) * 64)}px` }}
+                    />
+                    <span className="text-[11px] text-muted">{fmtDate(m.month, "MMM")}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="border-t border-line p-4">
+              <ProUpsell title="Tableau de bord RH" description="Taux d'absentéisme, jours de congés à provisionner et évolution des absences mois par mois." className="border-0" />
+            </div>
+          )}
         </Panel>
       )}
 

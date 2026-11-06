@@ -10,9 +10,9 @@ const days = [
 type Block = { from: number; to: number; color: string; label?: string; muted?: boolean };
 const teams: { name: string; min: number; color: string; people: { name: string; blocks: Block[]; julie?: boolean }[] }[] = [
   {
-    name: "Cuisine",
+    name: "Commercial",
     min: 2,
-    color: "#ea580c",
+    color: "#7c3aed",
     people: [
       { name: "Karim", blocks: [] },
       { name: "Julie", blocks: [], julie: true },
@@ -20,9 +20,9 @@ const teams: { name: string; min: number; color: string; people: { name: string;
     ],
   },
   {
-    name: "Salle",
+    name: "Support client",
     min: 2,
-    color: "#2563eb",
+    color: "#0891b2",
     people: [
       { name: "Sophie", blocks: [] },
       { name: "Lucas", blocks: [{ from: 7, to: 9, color: "#2563eb" }] },
@@ -120,7 +120,7 @@ export function HeroPlanning() {
           </span>
         </div>
         <div className="hero-stamp mt-2.5 flex items-center gap-1.5 rounded-ctl bg-ok-soft px-2.5 py-1.5 text-xs font-semibold text-ok">
-          <Check className="size-3.5" /> Validé par Karim, effectif cuisine respecté
+          <Check className="size-3.5" /> Validé par Karim, effectif commercial respecté
         </div>
       </div>
     </div>

@@ -13,16 +13,16 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           <div>
             <Logo />
             <p className="mt-3 max-w-xs text-sm text-muted">
-              La gestion des congés et absences pour les PME et l&apos;hôtellerie-restauration. Conçu et hébergé en France.
+              La gestion des congés et absences pour les entreprises de tous les secteurs. Conçu et hébergé en France.
             </p>
           </div>
           <div>
             <p className="text-sm font-semibold">Produit</p>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-ink-soft">
               <li><Link href="/#fonctionnalites" className="hover:text-ink">Fonctionnalités</Link></li>
-              <li><Link href="/hotellerie-restauration" className="hover:text-ink">Hôtellerie-restauration</Link></li>
+              <li><Link href="/#secteurs" className="hover:text-ink">Secteurs</Link></li>
+              <li><Link href="/hotellerie-restauration" className="hover:text-ink">Pack hôtellerie-restauration</Link></li>
               <li><Link href="/tarifs" className="hover:text-ink">Tarifs</Link></li>
-              <li><Link href="/securite" className="hover:text-ink">Sécurité et RGPD</Link></li>
             </ul>
           </div>
           <div>
@@ -36,6 +36,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           <div>
             <p className="text-sm font-semibold">Informations</p>
             <ul className="mt-3 flex flex-col gap-2 text-sm text-ink-soft">
+              <li><Link href="/securite" className="hover:text-ink">Sécurité et RGPD</Link></li>
               <li><Link href="/mentions-legales" className="hover:text-ink">Mentions légales</Link></li>
               <li><Link href="/confidentialite" className="hover:text-ink">Confidentialité</Link></li>
               <li><Link href="/cgu" className="hover:text-ink">Conditions générales</Link></li>

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const links = [
   { href: "/#fonctionnalites", label: "Fonctionnalités" },
-  { href: "/hotellerie-restauration", label: "Hôtellerie-restauration" },
+  { href: "/#secteurs", label: "Secteurs" },
   { href: "/tarifs", label: "Tarifs" },
   { href: "/securite", label: "Sécurité" },
 ];
@@ -41,7 +41,7 @@ export function SiteNav() {
         </button>
       </div>
       {open && (
-        <div className="border-t border-line bg-paper px-5 pt-2 pb-5 md:hidden">
+        <div className="menu-drop border-t border-line bg-paper px-5 pt-2 pb-5 md:hidden">
           <nav className="flex flex-col" aria-label="Navigation mobile">
             {links.map((l) => (
               <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="border-b border-line py-3 text-[15px]">
