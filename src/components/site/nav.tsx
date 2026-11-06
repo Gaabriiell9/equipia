@@ -10,7 +10,6 @@ const links = [
   { href: "/#fonctionnalites", label: "Fonctionnalités" },
   { href: "/#secteurs", label: "Secteurs" },
   { href: "/tarifs", label: "Tarifs" },
-  { href: "/securite", label: "Sécurité" },
 ];
 
 export function SiteNav() {
