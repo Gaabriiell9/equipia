@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { confirmUrl, generateLink } from "@/lib/admin-auth";
 import { existingAccountEmail, recoveryEmail, sendEmail, signupEmail } from "@/lib/email";
 import type { ActionResult } from "@/lib/actions";
+import { activityIds } from "@/lib/activities";
 
 function safeNext(v: FormDataEntryValue | string | null | undefined, fallback = "/app") {
   const s = typeof v === "string" ? v : "";
@@ -16,7 +17,7 @@ const signupSchema = z.object({
   first_name: z.string().trim().min(1, "Indiquez votre prénom").max(80),
   last_name: z.string().trim().min(1, "Indiquez votre nom").max(80),
   company: z.string().trim().min(2, "Indiquez le nom de votre entreprise").max(120),
-  sector: z.enum(["general", "hcr"]),
+  activity: z.enum(activityIds, { message: "Choisissez votre secteur" }),
   size: z.string().max(20).optional(),
   email: z.email("Adresse e-mail invalide").transform((v) => v.toLowerCase()),
   cgu: z.literal("on", { message: "Acceptez les conditions pour continuer" }),
@@ -35,7 +36,7 @@ export async function signUp(_: ActionResult | null, formData: FormData): Promis
   const link = await generateLink({
     type: "signup",
     email: v.email,
-    data: { first_name: v.first_name, last_name: v.last_name, company: v.company, sector: v.sector, size: v.size ?? null },
+    data: { first_name: v.first_name, last_name: v.last_name, company: v.company, activity: v.activity, sector: v.activity === "hcr" ? "hcr" : "general", size: v.size ?? null },
   });
   try {
     if (link.ok) {

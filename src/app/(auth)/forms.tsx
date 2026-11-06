@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormError, Input, Select } from "@/components/ui/field";
+import { activities } from "@/lib/activities";
 import { confirmToken, requestPasswordReset, signIn, signUp, updatePassword, verifyMfa } from "./actions";
 
 export function AuthCard({ title, description, children }: { title: string; description?: React.ReactNode; children: React.ReactNode }) {
@@ -75,13 +76,19 @@ export function SignUpForm() {
       <Field label="Entreprise" htmlFor="company" error={fe.company}>
         <Input id="company" name="company" autoComplete="organization" required />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Secteur" htmlFor="sector">
-          <Select id="sector" name="sector" defaultValue="general">
-            <option value="general">Tous secteurs</option>
-            <option value="hcr">Hôtellerie, restauration (HCR)</option>
-          </Select>
-        </Field>
+      <Field label="Secteur d'activité" htmlFor="activity" error={fe.activity}>
+        <Select id="activity" name="activity" defaultValue="" required>
+          <option value="" disabled>
+            Choisissez votre secteur
+          </option>
+          {activities.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.label}
+            </option>
+          ))}
+        </Select>
+      </Field>
+      <div>
         <Field label="Effectif" htmlFor="size">
           <Select id="size" name="size" defaultValue="11-50">
             <option value="1-10">1 à 10</option>

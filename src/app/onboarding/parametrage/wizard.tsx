@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, Badge } from "@/components/ui/display";
 import { Checkbox, Field, Input, Select } from "@/components/ui/field";
 import { ProBadge } from "@/components/ui/pro";
+import { teamSuggestions } from "@/lib/activities";
 import { cn, regionLabels, roleLabels, weekDays } from "@/lib/format";
 import type { Organization, Role, Team } from "@/lib/types";
 import { deleteTeam, inviteMember, sendInvitation, updateOrgSettings, upsertTeam } from "@/app/app/actions/admin";
@@ -40,10 +41,7 @@ const roleHelp: { role: Role; text: string }[] = [
 ];
 
 const teamColors = ["#2563eb", "#7c3aed", "#059669", "#ea580c", "#0891b2", "#db2777", "#a16207", "#64748b"];
-const suggestions: Record<Organization["sector"], string[]> = {
-  general: ["Direction", "Commercial", "Administration", "Production", "Support client", "Logistique"],
-  hcr: ["Cuisine", "Salle", "Réception", "Étages", "Bar"],
-};
+
 
 export function SetupWizard({ step, org, pro, meId, teams, members }: { step: number; org: Organization; pro: boolean; meId: string; teams: Team[]; members: SetupMember[] }) {
   return (
@@ -304,7 +302,7 @@ function TeamsStep({ org, teams }: { org: Organization; teams: Team[] }) {
         </Button>
       </form>
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {suggestions[org.sector]
+        {teamSuggestions(org.activity, org.sector)
           .filter((s) => !existing.has(s.toLowerCase()))
           .map((s) => (
             <button key={s} type="button" disabled={pending} onClick={() => add(s)} className="rounded-full border border-dashed border-line-strong px-3 py-1 text-[13px] text-ink-soft transition-colors hover:border-ink hover:text-ink">

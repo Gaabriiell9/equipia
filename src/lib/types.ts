@@ -16,6 +16,7 @@ export interface Organization {
   id: string;
   name: string;
   sector: "general" | "hcr";
+  activity: string | null;
   timezone: string;
   holiday_region: string;
   holidays_off: boolean;

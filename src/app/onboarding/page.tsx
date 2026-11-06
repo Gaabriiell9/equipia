@@ -25,7 +25,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ n
             Les types d&apos;absence courants (congés payés, maladie, événements familiaux...) sont créés automatiquement selon le droit français. Tout reste modifiable ensuite.
           </p>
           <div className="mt-6">
-            <OnboardingForm defaults={{ first_name: meta.first_name ?? "", last_name: meta.last_name ?? "", company: meta.company ?? "", sector: meta.sector ?? "general", size: meta.size ?? "" }} />
+            <OnboardingForm defaults={{ first_name: meta.first_name ?? "", last_name: meta.last_name ?? "", company: meta.company ?? "", sector: meta.sector ?? "general", activity: meta.activity ?? "", size: meta.size ?? "" }} />
           </div>
         </div>
       </main>

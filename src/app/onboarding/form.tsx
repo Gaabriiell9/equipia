@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormError, Input, Select } from "@/components/ui/field";
 import { regionLabels } from "@/lib/format";
 import { createOrganization } from "./actions";
+import { activities } from "@/lib/activities";
 
 export function OnboardingForm({ defaults }: { defaults: Record<string, string> }) {
   const [state, action, pending] = useActionState(createOrganization, null);
@@ -22,11 +23,17 @@ export function OnboardingForm({ defaults }: { defaults: Record<string, string> 
       <Field label="Nom de l'entreprise" htmlFor="company">
         <Input id="company" name="company" defaultValue={defaults.company} required minLength={2} />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Secteur" htmlFor="sector" hint="Pour les hôtels, cafés et restaurants, le pack HCR ajoute le suivi des 6 fériés garantis.">
-          <Select id="sector" name="sector" defaultValue={defaults.sector || "general"}>
-            <option value="general">Tous secteurs (bureaux, commerce, industrie...)</option>
-            <option value="hcr">Hôtellerie, restauration (convention HCR)</option>
+      <div className="grid gap-4">
+        <Field label="Secteur d'activité" htmlFor="activity" hint="Hôtels, cafés, restaurants : le pack HCR suit en plus les 6 fériés garantis.">
+          <Select id="activity" name="activity" defaultValue={defaults.activity || (defaults.sector === "hcr" ? "hcr" : "")} required>
+            <option value="" disabled>
+              Choisissez
+            </option>
+            {activities.map((x) => (
+              <option key={x.id} value={x.id}>
+                {x.label}
+              </option>
+            ))}
           </Select>
         </Field>
         <Field label="Jours fériés" htmlFor="region" hint="Pour le décompte des congés.">
