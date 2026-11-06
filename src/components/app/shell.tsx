@@ -23,6 +23,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { LiveRefresh } from "@/components/app/live-refresh";
 import { Avatar } from "@/components/ui/display";
 import {
   Dialog,
@@ -281,6 +282,7 @@ export function AppShell(p: ShellProps) {
       className="min-h-dvh bg-surface"
       style={{ "--top-h": p.topBanner ? "36px" : "0px" } as React.CSSProperties}
     >
+      <LiveRefresh orgId={p.org.id} />
       {p.topBanner && (
         <div className="sticky top-0 z-50 h-9 overflow-hidden">
           {p.topBanner}
