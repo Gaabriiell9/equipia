@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { AlertTriangle, Check, X } from "lucide-react";
+import { AlertTriangle, Check, Paperclip, X } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, TypeDot } from "@/components/ui/display";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,22 @@ export function ApprovalCard({ r, insights }: { r: RequestWithRefs; insights?: R
           </p>
           <p className="text-sm text-muted">{rangeLabel(r.start_date, r.start_half, r.end_date, r.end_half)}</p>
           {r.comment && <p className="mt-1.5 rounded-ctl bg-surface px-3 py-2 text-sm text-ink-soft">« {r.comment} »</p>}
+          {r.attachment_path ? (
+            <a
+              href={`/api/justificatifs?demande=${r.id}`}
+              target="_blank"
+              rel="noopener"
+              className="mt-2 inline-flex items-center gap-1.5 rounded-ctl border border-line-strong bg-paper px-2.5 py-1.5 text-[13px] font-semibold text-ink transition-colors hover:bg-surface"
+            >
+              <Paperclip className="size-3.5" /> Voir le justificatif
+            </a>
+          ) : (
+            r.leave_types?.requires_attachment && (
+              <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-muted">
+                <Paperclip className="size-3.5" /> Justificatif demandé, pas encore fourni
+              </p>
+            )
+          )}
           {insights && insights.deducts && insights.available != null && (
             <p className="mt-1.5 text-[13px] text-muted">
               Solde après validation :{" "}
