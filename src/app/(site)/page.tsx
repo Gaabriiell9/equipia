@@ -69,9 +69,9 @@ export default function Page() {
       {/* Par rôle */}
       <section id="fonctionnalites" className="scroll-mt-20 border-b border-line">
         <div className="mx-auto max-w-[1160px] px-5 py-20">
-          <h2 className="font-condensed max-w-3xl text-[2.6rem] leading-[1.02] font-bold sm:text-[3.2rem]">Chacun fait sa part en quelques secondes</h2>
-          <div className="mt-14 flex flex-col gap-16">
+          <div className="flex flex-col gap-16">
             <RoleRow
+              intro={<h2 className="font-condensed mb-10 max-w-xl text-[2.6rem] leading-[1.02] font-bold sm:text-[3.2rem]">Chacun fait sa part en quelques secondes</h2>}
               title="Le salarié pose ses congés en 30 secondes"
               points={[
                 "Il voit son solde avant d'envoyer la demande, et ce qu'il lui restera.",
@@ -246,10 +246,11 @@ export default function Page() {
   );
 }
 
-function RoleRow({ title, points, visual, reverse }: { title: string; points: string[]; visual: React.ReactNode; reverse?: boolean }) {
+function RoleRow({ intro, title, points, visual, reverse }: { intro?: React.ReactNode; title: string; points: string[]; visual: React.ReactNode; reverse?: boolean }) {
   return (
     <div className="grid items-center gap-10 lg:grid-cols-2">
       <div className={reverse ? "lg:order-2" : ""}>
+        {intro}
         <h3 className="text-[1.65rem] leading-tight font-bold">{title}</h3>
         <ul className="mt-5 flex flex-col gap-3">
           {points.map((p) => (
