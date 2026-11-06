@@ -5,7 +5,7 @@ import { fmtNum, rangeLabel } from "@/lib/format";
 import type { LeaveRequest } from "@/lib/types";
 
 export type RequestWithRefs = LeaveRequest & {
-  leave_types: { name: string; color: string; code: string; requires_attachment?: boolean } | null;
+  leave_types: { name: string; color: string; code: string; requires_attachment?: boolean; reasons?: { code: string; label: string }[] } | null;
   member?: { first_name: string; last_name: string } | null;
 };
 

@@ -4,7 +4,7 @@ import type { Balance, CalendarRow } from "./types";
 import type { RequestWithRefs } from "@/components/app/request-row";
 
 export const REQUEST_SELECT =
-  "*, leave_types(name, color, code, requires_attachment), member:members!leave_requests_member_id_fkey(first_name, last_name)";
+  "*, leave_types(name, color, code, requires_attachment, reasons), member:members!leave_requests_member_id_fkey(first_name, last_name)";
 
 export async function myBalances(ctx: AppContext, memberId?: string) {
   const { data } = await ctx.supabase.rpc("member_balances", { p_org: ctx.org.id, p_member: memberId ?? null });

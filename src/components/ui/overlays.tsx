@@ -48,6 +48,26 @@ export function DialogContent({
   );
 }
 
+// Panneau latéral (à droite sur ordinateur, en bas sur mobile) pour examiner un élément sans quitter la liste
+export function DrawerContent({ title, children, footer }: { title: string; children: React.ReactNode; footer?: React.ReactNode }) {
+  return (
+    <D.Portal>
+      <D.Overlay className="drawer-overlay fixed inset-0 z-50 bg-navy-900/40" />
+      <D.Content className="drawer-panel fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-[18px] bg-paper shadow-[0_-8px_40px_rgba(13,23,48,0.18)] focus:outline-none sm:inset-y-0 sm:right-0 sm:left-auto sm:max-h-none sm:w-[480px] sm:rounded-none sm:shadow-[-8px_0_40px_rgba(13,23,48,0.18)]">
+        <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-4">
+          <D.Title className="text-lg font-bold text-ink">{title}</D.Title>
+          <D.Description className="sr-only">{title}</D.Description>
+          <D.Close className="rounded-ctl p-1.5 text-muted hover:bg-surface hover:text-ink" aria-label="Fermer">
+            <X className="size-5" />
+          </D.Close>
+        </div>
+        <div className="flex-1 overflow-y-auto px-5 py-5">{children}</div>
+        {footer && <div className="border-t border-line bg-paper px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">{footer}</div>}
+      </D.Content>
+    </D.Portal>
+  );
+}
+
 export const Menu = DM.Root;
 export const MenuTrigger = DM.Trigger;
 
