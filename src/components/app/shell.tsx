@@ -318,14 +318,7 @@ export function AppShell(p: ShellProps) {
               {p.org.name}
             </p>
           )}
-          {path !== "/app" && (
-            <Link
-              href="/app/absences/nouvelle"
-              className="mx-1 mt-4 flex h-11 items-center justify-center gap-2 rounded-ctl bg-marker text-[15px] font-semibold text-ink hover:bg-marker-strong"
-            >
-              <Plus className="size-[18px]" /> Poser une absence
-            </Link>
-          )}
+
           <div className="mt-5 flex-1 overflow-y-auto">
             <NavList p={p} indicator />
           </div>
